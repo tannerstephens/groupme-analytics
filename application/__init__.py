@@ -37,10 +37,10 @@ class ReverseProxied(object):
 
 def create_app(config='application.config.Config'):
   app = Flask(__name__)
-  app.redis = Redis.from_url(app.config['REDIS_URL'])
-  app.task_queue = rq.Queue('groupme-loader', connection=app.redis)
   app.wsgi_app = ReverseProxied(app.wsgi_app)
   app.config.from_object(config)
+  app.redis = Redis.from_url(app.config['REDIS_URL'])
+  app.task_queue = rq.Queue('groupme-loader', connection=app.redis)
 
   with app.app_context():
     from application.database import db
