@@ -57,7 +57,7 @@ def analyze(group_id):
   else:
     return render_template('views/analysis_loading.html')
 
-@views.route('/analyze/<int:group_id>/status')
+@views.route('/analyze/<group_id>/status')
 def analysis_status(group_id):
 
   group = Group.query.filter_by(group_id=group_id).first()
@@ -67,4 +67,4 @@ def analysis_status(group_id):
 
   job = group.get_rq_job()
 
-  return jsonify(dict(is_finished=False))
+  return jsonify(dict(is_finished=job.is_finished))
