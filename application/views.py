@@ -52,7 +52,7 @@ def analyze(group_id):
     job = group.get_rq_job()
 
   if job.is_finished:
-    info = jon.return_value
+    info = job.return_value
     return render_template('views/analysis.html')
   else:
     return render_template('views/analysis_loading.html')
