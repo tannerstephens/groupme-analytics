@@ -14,7 +14,7 @@ class Group(db.Model):
 
   def get_rq_job(self):
     try:
-        rq_job = rq.job.Job.fetch(self.group_id, connection=current_app.redis)
+        rq_job = rq.job.Job.fetch(self.message_job_id, connection=current_app.redis)
     except (redis.exceptions.RedisError, rq.exceptions.NoSuchJobError):
         return None
     return rq_job
