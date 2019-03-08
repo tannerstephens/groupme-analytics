@@ -44,7 +44,7 @@ def analyze(group_id):
   if group is None:
     group = Group(group_id = group_id)
     gapi = API(at)
-    job = current_app.task_queue.enqueue(gapi.analyze_group, group_id, result_ttl=-1)
+    job = current_app.task_queue.enqueue(gapi.analyze_group, group_id, result_ttl=-1, timeout=3600)
     group.message_job_id = job.get_id()
     db.session.add(group)
     db.session.commit()
@@ -67,4 +67,4 @@ def analysis_status(group_id):
 
   job = group.get_rq_job()
 
-  return jsonify(dict(is_finished=job.is_finished))
+  return jsonify(dict(is_finished=job.is_finished, percent=job.meta.get('progress', 0)))
