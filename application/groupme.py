@@ -38,6 +38,7 @@ class API:
 
     while r.status_code == 200:
       job.meta['progress'] = len(messages) / total_messages
+      job.save_meta()
       r = requests.get(self.base.format('/groups/{}/messages?before_id={}'.format(group_id, before_id)), headers=self.headers)
       if r.status_code != 304:
         messages += r.json().get('response').get('messages')
