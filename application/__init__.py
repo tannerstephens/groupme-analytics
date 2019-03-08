@@ -44,6 +44,7 @@ def create_app(config='application.config.Config'):
 
   with app.app_context():
     from application.database import db
+    db.create_all()
     
     from application.views import views
     app.register_blueprint(views)
