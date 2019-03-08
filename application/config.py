@@ -25,6 +25,8 @@ if not os.environ.get('SECRET_KEY'):
 class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or key
     REDIS_URL = os.environ.get('REDIS_URL') or 'redis://127.0.0.1:6379'
+    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///{}/database.db'.format(os.path.dirname(os.path.abspath(__file__)))
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     with open('.groupme_key') as f:
         GROUPME_KEY = f.readline().strip()
