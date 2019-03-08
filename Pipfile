@@ -6,6 +6,11 @@ name = "pypi"
 [packages]
 pip = "==18.0"
 flask = "*"
+requests = "*"
+flask-sqlalchemy = "*"
+flask-login = "*"
+redis = "*"
+rq = "*"
 
 [dev-packages]
 

@@ -1,0 +1,23 @@
+{% extends "wrapper.html" %}
+
+{% block body %}
+<div class="columns is-centered">
+  <div class="column is-narrow">
+    <h1 class="title">
+      Select a Group
+    </h1>
+    <table class="table">
+      <tbody>
+        {% for group in groups %}
+        <tr>
+          <td><img src="{{ group.image }}" class="image is-32x32"></td>
+          <td>{{ group.name }}</td>
+          <td><a class="button is-primary" href="/analyze/{{ group.id }}">Select Group</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

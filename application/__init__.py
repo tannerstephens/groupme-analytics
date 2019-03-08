@@ -1,4 +1,6 @@
 from flask import Flask
+from redis import Redis
+import rq
 
 class ReverseProxied(object):
   '''Wrap the application in this middleware and configure the 
@@ -33,13 +35,18 @@ class ReverseProxied(object):
           environ['wsgi.url_scheme'] = scheme
       return self.app(environ, start_response)
 
-def create_app():
+def create_app(config='application.config.Config'):
   app = Flask(__name__)
+  app.redis = Redis.from_url(app.config['REDIS_URL'])
+  app.task_queue = rq.Queue('groupme-loader', connection=app.redis)
   app.wsgi_app = ReverseProxied(app.wsgi_app)
-  # app.config.from_object(config)
+  app.config.from_object(config)
 
   with app.app_context():
+    from application.database import db
+    
     from application.views import views
     app.register_blueprint(views)
+
 
   return app
