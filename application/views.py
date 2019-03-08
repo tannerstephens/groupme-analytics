@@ -53,7 +53,7 @@ def analyze(group_id):
 
   if job.is_finished:
     info = job.return_value
-    return render_template('views/analysis.html')
+    return jsonify(info)
   else:
     return render_template('views/analysis_loading.html')
 
