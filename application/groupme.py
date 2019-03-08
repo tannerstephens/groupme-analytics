@@ -49,4 +49,6 @@ class API:
   def analyze_group(self, group_id):
     messages = self.messages(group_id)
 
+    return dict(messages=len(messages))
+
     
