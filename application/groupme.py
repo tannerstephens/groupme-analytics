@@ -1,4 +1,5 @@
 import requests, json
+from rq import get_current_job
 
 class Group:
   def __init__(self, name, image, id):
@@ -28,11 +29,15 @@ class API:
     return groups_out
 
   def messages(self, group_id):
+    job = get_current_job()
+
     r = requests.get(self.base.format('/groups/{}/messages'.format(group_id)), headers=self.headers)
     messages = r.json().get('response').get('messages')
+    total_messages = r.json().get('response').get('count')
     before_id = messages[-1]['id']
 
     while r.status_code == 200:
+      job.meta['progress'] = len(messages) / total_messages
       r = requests.get(self.base.format('/groups/{}/messages?before_id={}'.format(group_id, before_id)), headers=self.headers)
       if r.status_code != 304:
         messages += r.json().get('response').get('messages')
