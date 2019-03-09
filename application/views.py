@@ -38,7 +38,7 @@ def analyze(group_id):
   group = Group.query.filter_by(group_id=group_id).first()
   
   if group is not None:
-    job = current_app.task_queue.enqueue(gapi.analyze_group, group_id, result_ttl=86400, timeout=3600)
+    job = group.get_rq_job()
 
     if job:
       if job.is_finished:
