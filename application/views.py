@@ -49,7 +49,7 @@ def analyze(group_id):
     if not gapi.authorized(group_id):
       return redirect('/')
     group = Group(group_id = group_id)
-    job = current_app.task_queue.enqueue(gapi.analyze_group, group_id, result_ttl=600, timeout=3600)
+    job = current_app.task_queue.enqueue(gapi.analyze_group, group_id, result_ttl=86400, timeout=3600)
     group.message_job_id = job.get_id()
     db.session.add(group)
     db.session.commit()
@@ -58,7 +58,7 @@ def analyze(group_id):
     if job is None or job.status=="failed":
       if not gapi.authorized(group_id):
         return redirect('/')
-      job = current_app.task_queue.enqueue(gapi.analyze_group, group_id, result_ttl=600, timeout=3600)
+      job = current_app.task_queue.enqueue(gapi.analyze_group, group_id, result_ttl=86400, timeout=3600)
       group.message_job_id = job.get_id()
       db.session.add(group)
       db.session.commit()
