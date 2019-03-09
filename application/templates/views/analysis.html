@@ -1,13 +1,256 @@
 {% extends "wrapper.html" %}
 
+{% block prebody %}
+<section class="hero is-info">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title" id="groupname">
+        {{ data['name'] }}
+      </h1>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
 {% block body %}
-<div class="columns is-centered">
-  <div class="column is-narrow">
-    <div class="lds-css ng-scope"><div style="width:100%;height:100%" class="lds-eclipse"><div></div></div>
+<div class="columns">
+  <div class="column is-one-quarter-desktop is-full-mobile">
+    <div class="card">
+      <div class="card-content has-text-centered">
+        <h1 class="title is-5">Total Messages</h1>
+        <h2 class="subtitle is-6">{{ data['num_messages'] }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="column is-one-quarter-desktop is-full-mobile">
+    <div class="card">
+      <div class="card-content has-text-centered">
+        <h1 class="title is-5">Total Words</h1>
+        <h2 class="subtitle is-6">{{ data['words']['total'] }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="column is-one-quarter-desktop is-full-mobile">
+    <div class="card">
+      <div class="card-content has-text-centered">
+        <h1 class="title is-5">Total Likes</h1>
+        <h2 class="subtitle is-6">{{ data['likes']['total'] }}</h2>
+      </div>
+    </div>
+  </div>
+  <div class="column is-one-quarter-desktop is-full-mobile">
+    <div class="card">
+      <div class="card-content has-text-centered">
+        <h1 class="title is-5">Total Members</h1>
+        <h2 class="subtitle is-6">{{ data['members']|length }}</h2>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="columns">
+  <div class="column">
+    <div class="card">
+      <div class="tabs">
+        <ul>
+          <li id="navlikes"><a onclick="set_view('likes');">Likes Breakdown</a></li>
+          <li id="navpopimg"><a onclick="set_view('popimg');">Popular Images</a></li>
+          <li id="navpoppost"><a onclick="set_view('poppost');">Popular Posts</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Popular Image View -->
+<div class="columns" id="viewpopimg" style="display: none;">
+  <div class="column is-one-quarter-desktop">
+    <div class="card">
+      <div class="card-content">
+        <aside class="menu">
+          <p class="menu-label">
+            Members
+          </p>
+          <ul class="menu-list">
+            {% for member in data['members'] %}
+              <li><a id="menuimg{{ member['id'] }}" onclick="show_image({{ member['id'] }});">{{ member['name'] }}</a></li>
+            {% endfor %}
+          </ul>
+        </aside>
+      </div> 
+    </div>
+  </div>
+  <div class="column is-three-quarters-desktop">
+    {% for member in data['members'] %}
+      <div class="card" style="display: none;" id="image{{ member['id'] }}">
+        <div class="card-content">
+          <article class="media">
+            <figure class="media-left">
+              <p class="image is-64x64">
+                <img class="is-rounded" src="{{ member['image'] }}.preview" width=100%>
+              </p>
+            </figure>
+            <figure class="media-content">
+              <div class="content">
+                <strong>{{member['name']}}</strong>
+                <br>
+                <img src="{{ data['best_images'][member['id']]['image'] }}">
+              </div>
+            </figure>
+            <div class="media-right">
+              <span class="fa-stack fa-1x">
+                <i class="fas fa-heart fa-stack-2x" style="color:red;"></i>
+                <center><span class="fa-stack-1x" style="color:white; margin-top:1px;">{{ data['best_images'][member['id']]['likes'] }}</span></center>
+              </span>
+            </div>
+          </article>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Popular Posts View -->
+<div class="columns" id="viewpoppost" style="display: none;">
+  <div class="column is-one-quarter-desktop">
+    <div class="card">
+      <div class="card-content">
+        <aside class="menu">
+          <p class="menu-label">
+            Members
+          </p>
+          <ul class="menu-list">
+            {% for member in data['members'] %}
+              <li><a id="menupost{{ member['id'] }}" onclick="show_post({{ member['id'] }});">{{ member['name'] }}</a></li>
+            {% endfor %}
+          </ul>
+        </aside>
+      </div> 
+    </div>
+  </div>
+  <div class="column is-three-quarters-desktop">
+    {% for member in data['members'] %}
+      <div class="card" style="display: none;" id="post{{ member['id'] }}">
+        <div class="card-content">
+          <article class="media">
+            <figure class="media-left">
+              <p class="image is-64x64">
+                <img class="is-rounded" src="{{ member['image'] }}.preview">
+              </p>
+            </figure>
+            <figure class="media-content">
+              <div class="content">
+                <strong>{{member['name']}}</strong>
+                <br>
+                {{ data['best_posts'][member['id']]['text'] }}
+              </div>
+            </figure>
+            <div class="media-right">
+              <span class="fa-stack fa-1x">
+                <i class="fas fa-heart fa-stack-2x" style="color:red;"></i>
+                <center><span class="fa-stack-1x" style="color:white; margin-top:1px;">{{ data['best_posts'][member['id']]['likes'] }}</span></center>
+              </span>
+            </div>
+          </article>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Likes View -->
+<div class="columns" id="viewlikes" style="display: none;">
+  <div class="column is-one-quarter-desktop">
+    <div class="card">
+      <div class="card-content">
+        <aside class="menu">
+          <p class="menu-label">
+            Members
+          </p>
+          <ul class="menu-list">
+            {% for member in data['members'] %}
+              <li><a id="menulike{{ member['id'] }}" onclick="show_likes({{ member['id'] }});">{{ member['name'] }}</a></li>
+            {% endfor %}
+          </ul>
+        </aside>
+      </div> 
+    </div>
+  </div>
+  <div class="column is-three-quarters-desktop">
+    {% for member in data['members'] %}
+      <div class="card" style="display: none;" id="likes{{ member['id'] }}">
+        <div class="card-content">
+          <h1 class="subtitle">Likes Breakdown for {{ member['name'] }} | Total: {{ data['likes'][member['id']]['total'] }}</h1>
+          <div class="columns is-multiline">
+            {% for sub_member in data['members'] %}
+              <div class="column is-half-desktop">
+                <div class="box">
+                  <article class="media">
+                    <figure class="media-left">
+                      <p class="image is-64x64">
+                        <img class="is-rounded" src="{{ sub_member['image'] }}.preview">
+                      </p>
+                    </figure>
+                    <figure class="media-content">
+                      {{sub_member['name']}}
+                      <br>
+                      {{data['likes'][member['id']][sub_member['id']]}}
+                    </figure>
+                  </article>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
   </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+var last_likes = null;
+var last_image = null;
+var last_post = null;
+var view = null;
 
+function show_likes(member_id) {
+  if(last_likes) {
+    $("#likes" + last_likes).hide();
+    $("#menulike" + last_likes).removeClass("is-active");
+  }
+  $("#likes" + member_id).show();
+  $("#menulike" + member_id).addClass("is-active");
+  last_likes = member_id;
+}
+
+function show_post(member_id) {
+  if(last_post) {
+    $("#post" + last_post).hide();
+    $("#menupost" + last_post).removeClass("is-active");
+  }
+  $("#post" + member_id).show();
+  $("#menupost" + member_id).addClass("is-active");
+  last_post = member_id;
+}
+
+function show_image(member_id) {
+  if(last_image) {
+    $("#image" + last_image).hide();
+    $("#menuimg" + last_image).removeClass("is-active");
+  }
+  $("#image" + member_id).show();
+  $("#menuimg" + member_id).addClass("is-active");
+  last_image = member_id;
+}
+
+function set_view(view_name) {
+  if(view) {
+    $("#view" + view).hide();
+    $("#nav" + view).removeClass("is-active");
+  }
+
+  $("#view" + view_name).show();
+  $("#nav" + view_name).addClass("is-active");
+  view = view_name;
+}
 {% endblock %}

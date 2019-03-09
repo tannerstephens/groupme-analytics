@@ -39,27 +39,38 @@ def analyze(group_id):
   if at is None:
     return redirect('/')
 
+  gapi = API(at)
+
   group = Group.query.filter_by(group_id=group_id).first()
 
+  
+
   if group is None:
+    if not gapi.authorized(group_id):
+      return redirect('/')
     group = Group(group_id = group_id)
-    gapi = API(at)
-    job = current_app.task_queue.enqueue(gapi.analyze_group, group_id, result_ttl=-1, timeout=3600)
+    job = current_app.task_queue.enqueue(gapi.analyze_group, group_id, result_ttl=5, timeout=3600)
     group.message_job_id = job.get_id()
     db.session.add(group)
     db.session.commit()
   else:
     job = group.get_rq_job()
+    if job is None or job.status=="failed":
+      if not gapi.authorized(group_id):
+        return redirect('/')
+      job = current_app.task_queue.enqueue(gapi.analyze_group, group_id, result_ttl=5, timeout=3600)
+      group.message_job_id = job.get_id()
+      db.session.add(group)
+      db.session.commit()
 
   if job.is_finished:
-    info = job.return_value
-    return jsonify(info)
+    data = job.return_value
+    return render_template('views/analysis.html', data=data)
   else:
     return render_template('views/analysis_loading.html')
 
-@views.route('/analyze/<group_id>/status')
+@views.route('/analyze/<int:group_id>/status')
 def analysis_status(group_id):
-
   group = Group.query.filter_by(group_id=group_id).first()
 
   if group is None:
@@ -67,4 +78,16 @@ def analysis_status(group_id):
 
   job = group.get_rq_job()
 
-  return jsonify(dict(is_finished=job.is_finished, percent=job.meta.get('progress', 0)))
+  return jsonify(dict(status=job.status, is_finished=job.is_finished, percent=job.meta.get('progress', 0)))
+
+@views.route('/analyze/<int:group_id>/stats')
+def group_stats(group_id):
+  group = Group.query.filter_by(group_id=group_id).first()
+  job = group.get_rq_job()
+
+  if job is not None:
+    if job.is_finished:
+      info = job.return_value
+      return jsonify(info)
+
+  return jsonify(dict(success=False))

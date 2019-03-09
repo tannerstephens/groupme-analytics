@@ -4,10 +4,27 @@
 <div class="columns is-centered">
   <div class="column is-narrow">
     <div class="lds-css ng-scope"><div style="width:100%;height:100%" class="lds-eclipse"><div></div></div>
+    <h2 class="subtitle has-text-centered" id="percent">Analysis Queued</h2>
   </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
+function update() {
+  $.getJSON($(location).attr("href") + "/status", function(data) {
+    if(data.status != "queued") {
+      var percent = (data.percent*100);
+      $("#percent").html("Analysis: " + percent.toFixed(2) + "%");
+      if (data.is_finished) {
+        location.reload();
+      } else {
+        setTimeout(update, 1000);
+      }
+    }
+  });
+}
+
+update();
+
 
 {% endblock %}
