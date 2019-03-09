@@ -108,7 +108,7 @@ class API:
             if (best_image[sender_id]['likes'] < num_fav):
               best_image[sender_id]['likes'] = num_fav
               best_image[sender_id]['image'] = list(filter(lambda x: x['type'] == 'image', message['attachments']))[0]['url']
-              best_image[sender_id]['image'] = message['text']
+              best_image[sender_id]['text'] = message['text']
           else:
             if best_post[sender_id]['likes'] < num_fav:
               best_post[sender_id]['likes'] = num_fav
