@@ -72,7 +72,9 @@
           </p>
           <ul class="menu-list">
             {% for member in data['members'] %}
-              <li><a id="menuimg{{ member['id'] }}" onclick="show_image({{ member['id'] }});">{{ member['name'] }}</a></li>
+              {% if data['best_images'][member['id']]['image'] %}
+                <li><a id="menuimg{{ member['id'] }}" onclick="show_image({{ member['id'] }});">{{ member['name'] }}</a></li>
+              {% endif %}
             {% endfor %}
           </ul>
         </aside>
@@ -94,6 +96,8 @@
                 <strong>{{member['name']}}</strong>
                 <br>
                 <img src="{{ data['best_images'][member['id']]['image'] }}">
+                <br>
+                {{ data['best_images'][member['id']]['text'] }}
               </div>
             </figure>
             <div class="media-right">
@@ -120,7 +124,9 @@
           </p>
           <ul class="menu-list">
             {% for member in data['members'] %}
-              <li><a id="menupost{{ member['id'] }}" onclick="show_post({{ member['id'] }});">{{ member['name'] }}</a></li>
+              {% if data['best_posts'][member['id']]['text'] %}
+                <li><a id="menupost{{ member['id'] }}" onclick="show_post({{ member['id'] }});">{{ member['name'] }}</a></li>
+              {% endif %}
             {% endfor %}
           </ul>
         </aside>
@@ -168,7 +174,7 @@
           </p>
           <ul class="menu-list">
             {% for member in data['members'] %}
-              <li><a id="menulike{{ member['id'] }}" onclick="show_likes({{ member['id'] }});">{{ member['name'] }}</a></li>
+              <li><a id="menulike{{ member['id'] }}" onclick="show_likes({{ member['id'] }});">{{ member['name'] }} ({{ data['likes'][member['id']]['total'] }})</a></li>
             {% endfor %}
           </ul>
         </aside>
@@ -179,7 +185,7 @@
     {% for member in data['members'] %}
       <div class="card" style="display: none;" id="likes{{ member['id'] }}">
         <div class="card-content">
-          <h1 class="subtitle">Likes Breakdown for {{ member['name'] }} | Total: {{ data['likes'][member['id']]['total'] }}</h1>
+          <h1 class="subtitle">Likes Breakdown for {{ member['name'] }}</h1>
           <div class="columns is-multiline">
             {% for sub_member in data['members'] %}
               <div class="column is-half-desktop">

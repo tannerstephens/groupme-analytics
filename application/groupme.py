@@ -92,7 +92,7 @@ class API:
       likes[member.id] = {'total':0}
       words[member.id] = 0
       best_post[member.id] = dict(text=None, likes=-1)
-      best_image[member.id] = dict(image=None, likes=-1)
+      best_image[member.id] = dict(image=None, likes=-1, text=None)
       for member2 in members:
         likes[member.id][member2.id] = 0
 
@@ -108,6 +108,7 @@ class API:
             if (best_image[sender_id]['likes'] < num_fav):
               best_image[sender_id]['likes'] = num_fav
               best_image[sender_id]['image'] = list(filter(lambda x: x['type'] == 'image', message['attachments']))[0]['url']
+              best_image[sender_id]['image'] = message['text']
           else:
             if best_post[sender_id]['likes'] < num_fav:
               best_post[sender_id]['likes'] = num_fav
