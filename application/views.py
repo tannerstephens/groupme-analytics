@@ -34,6 +34,17 @@ def loggedin():
 
 @views.route('/analyze/<int:group_id>')
 def analyze(group_id):
+
+  group = Group.query.filter_by(group_id=group_id).first()
+  
+  if group is not None:
+    job = current_app.task_queue.enqueue(gapi.analyze_group, group_id, result_ttl=86400, timeout=3600)
+
+    if job:
+      if job.is_finished:
+        data = job.return_value
+        return render_template('views/analysis.html', data=data)
+  
   at = session.get('access_token')
 
   if at is None:
